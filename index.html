@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Arcane App Shelf • by Braidan Monkhouse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta name="description" content="A cozy collection of magical, musical, and mindful PWAs by Braidan Monkhouse: Tome, Cozy Wizard, Budget Bloom, Islands of Focus, 8-Beat Studio, Jerry, and Jerry Editor." />
+  <meta name="theme-color" content="#3e1560" />
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <style>
+    :root {
+      --bg-main: #05030a;
+      --bg-gradient: radial-gradient(circle at top, #3e1560 0%, #05030a 55%, #020106 100%);
+      --card-bg: rgba(13, 8, 24, 0.96);
+      --card-border: rgba(235, 210, 255, 0.16);
+      --accent: #e5c3ff;
+      --accent-strong: #f9d06c;
+      --text-main: #f8f0ff;
+      --text-muted: #b29acb;
+      --shadow-soft: 0 20px 45px rgba(0, 0, 0, 0.75);
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --blur-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background: var(--bg-gradient), var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 20px 16px 40px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .title-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(16, 10, 36, 0.8);
+      border: 1px solid rgba(226, 180, 255, 0.45);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 0 0 1px rgba(176, 118, 252, 0.3);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .title-pill span.icon {
+      font-size: 1rem;
+    }
+
+    h1 {
+      font-weight: 650;
+      font-size: clamp(2rem, 3.3vw, 2.6rem);
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-top: 26px;
+    }
+
+    @media (min-width: 640px) {
+      .app-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 980px) {
+      .app-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .app-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle at top left, rgba(158, 92, 255, 0.14), transparent 60%),
+        var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-soft);
+      padding: 16px 15px 14px;
+      backdrop-filter: blur(var(--blur-sm));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      isolation: isolate;
+      transition:
+        transform 170ms ease-out,
+        box-shadow 170ms ease-out,
+        border-color 170ms ease-out,
+        background 170ms ease-out;
+    }
+
+    .app-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at top, rgba(249, 208, 108, 0.08), transparent 60%);
+      opacity: 0;
+      transition: opacity 200ms ease-out;
+      z-index: -1;
+    }
+
+    .app-card:hover,
+    .app-card:focus-within {
+      transform: translateY(-4px);
+      border-color: rgba(249, 208, 108, 0.7);
+      box-shadow: 0 26px 55px rgba(0, 0, 0, 0.9);
+      background:
+        radial-gradient(circle at top left, rgba(249, 208, 108, 0.16), transparent 60%),
+        var(--card-bg);
+    }
+
+    .app-card:hover::before,
+    .app-card:focus-within::before {
+      opacity: 1;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow:
+        0 0 0 1px rgba(243, 226, 255, 0.5),
+        0 10px 22px rgba(0, 0, 0, 0.75);
+      background: radial-gradient(circle at 25% 10%, #f9d06c, #8b4de0); /* fallback */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .app-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .app-tagline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .app-body {
+      font-size: 0.86rem;
+      color: var(--text-main);
+      line-height: 1.5;
+      margin-top: 2px;
+    }
+
+    .app-meta {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.7rem;
+    }
+
+    .meta-pill {
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(18, 10, 38, 0.95);
+      border: 1px solid rgba(145, 112, 255, 0.7);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .app-footer {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary,
+    .btn-ghost {
+      font-size: 0.78rem;
+      padding: 6px 11px;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f9d06c, #f3a93b);
+      color: #2b1505;
+      font-weight: 600;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+    }
+
+    .btn-primary span.icon {
+      font-size: 0.9rem;
+    }
+
+    .btn-ghost {
+      background: rgba(12, 7, 30, 0.8);
+      color: var(--accent);
+      border-color: rgba(190, 147, 255, 0.7);
+    }
+
+    .btn-primary:focus-visible,
+    .btn-ghost:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      opacity: 0.9;
+    }
+
+    footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      opacity: 0.9;
+    }
+
+    footer a {
+      color: var(--accent-strong);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="title-pill">
+        <span class="icon">📖</span>
+        <span>Arcane App Shelf</span>
+      </div>
+      <h1>Braidan&rsquo;s Tiny Worlds &amp; Tools</h1>
+      <p class="subtitle">
+        A cozy collection of magical notebooks, focus familiars, budget gardens, music machines,
+        and pixel pals. All handcrafted PWAs by Braidan Monkhouse.
+      </p>
+    </header>
+
+    <section class="app-grid" aria-label="App collection">
+      <!-- Tome -->
+      <article class="app-card">
+        <div class="app-header">
+          <div class="app-icon">
+            <!-- TODO: replace with your real Tome icon path or remote URL -->
+            <img src="icons/tome-512.png" alt="Tome app icon" />
+          </div>
+          <div>
+            <div class="app-title">Tome</div>
+            <div class="app-tagline">A royal-purple grimoire for thoughts &amp; schemes.</div>
+          </div>
+        </div>
+        <div class="app-body">
+          A minimalist, book-themed writing space wrapped in royal purple and gold. Use it as a micro-journal,
+          idea vault, or digital spellbook when you just need somewhere pretty to think.
+        </div>
+        <div class="app-meta">
+          <span class="meta-pill">PWA</span>
+          <span class="meta-pill">Journal</span>
+          <span class="meta-pill">Book UI</span>
+        </div>
+        <div class="app-footer">
+          <div class="app-links">
+            <a class="btn-primary" href="https://braemonk.github.io/Tome/index.html" target="_blank" rel="noopener">
+              <span class="icon">✨</span>
+              <span>Open Tome</span>
+            </a>
+          </div>
+          <span class="badge">Built in a day</span>
+        </div>
+      </article>
+
+      <!-- Cozy Wizard (StudyWizard) -->
+      <article class="app-card">
+        <div class="app-header">
+          <div class="app-icon">
+            <!-- TODO: replace with real Cozy Wizard icon -->
+            <img src="icons/cozy-wizard-512.png" alt="Cozy Wizard app icon" />
+          </div>
+          <div>
+            <div class="app-title">Cozy Wizard</div>
+            <div class="app-tagline">Turn study sessions into tiny RPG quests.</div>
+          </div>
+        </div>
+        <div class="app-body">
+          A wizard-themed focus helper that makes studying feel like casting spells. Open a session,
+          treat it like a quest, and let the cozy vibes nudge you into actually doing the thing.
+        </div>
+        <div class="app-meta">
+          <span class="meta-pill">PWA</span>
+          <span class="meta-pill">Productivity</span>
+          <span class="meta-pill">RPG Vibes</span>
+        </div>
+        <div class="app-footer">
+          <div class="app-links">
+            <a class="btn-primary" href="https://braemonk.github.io/StudyWizard/index.html" target="_blank" rel="noopener">
+              <span class="icon">🎓</span>
+              <span>Open Cozy Wizard</span>
+            </a>
+          </div>
+          <span class="badge">Focus familiar</span>
+        </div>
+      </article>
+
+      <!-- Budget Bloom -->
+      <article class="app-card">
+        <div class="app-header">
+          <div class="app-icon">
+            <!-- TODO: replace with real Budget Bloom icon -->
+            <img src="icons/budget-bloom-512.png" alt="Budget Bloom app icon" />
+          </div>
+          <div>
+            <div class="app-title">Budget Bloom</div>
+            <div class="app-tagline">A soft &amp; cozy envelope-style budget garden.</div>
+          </div>
+        </div>
+        <div class="app-body">
+          Track envelopes, debts, and savings with a gentle interface designed to feel less like a bank app
+          and more like tending a little money garden, one leaf at a time.
+        </div>
+        <div class="app-meta">
+          <span class="meta-pill">PWA</span>
+          <span class="meta-pill">Budgeting</span>
+          <span class="meta-pill">Cozy UI</span>
+        </div>
+        <div class="app-footer">
+          <div class="app-links">
+            <a class="btn-primary" href="https://braemonk.github.io/BudgetBloom/index.html" target="_blank" rel="noopener">
+              <span class="icon">💸</span>
+              <span>Open Budget Bloom</span>
+            </a>
+          </div>
+          <span class="badge">Money, but kinder</span>
+        </div>
+      </article>
+
+      <!-- Islands of Focus -->
+      <article class="app-card">
+        <div class="app-header">
+          <div class="app-icon">
+            <!-- TODO: replace with real Islands of Focus icon -->
+            <img src="icons/islands-of-focus-512.png" alt="Islands of Focus app icon" />
+          </div>
+          <div>
+            <div class="app-title">Islands of Focus</div>
+            <div class="app-tagline">Explore music vault islands instead of playlists.</div>
+          </div>
+        </div>
+        <div class="app-body">
+          A strange little archipelago for your tracks—each island a mood, each visit a focus session.
+          Wander through your music vault in a more playful, less “playlist spreadsheet” way.
+        </div>
+        <div class="app-meta">
+          <span class="meta-pill">PWA</span>
+          <span class="meta-pill">Music</span>
+          <span class="meta-pill">Focus</span>
+        </div>
+        <div class="app-footer">
+          <div class="app-links">
+            <a class="btn-primary" href="https://braemonk.github.io/IslandsOfFocus/" target="_blank" rel="noopener">
+              <span class="icon">🎧</span>
+              <span>Open Islands</span>
+            </a>
+          </div>
+          <span class="badge">Vault companion</span>
+        </div>
+      </article>
+
+      <!-- 8-Beat Studio -->
+      <article class="app-card">
+        <div class="app-header">
+          <div class="app-icon">
+            <!-- TODO: replace with real 8-Beat icon -->
+            <img src="icons/8beat-512.png" alt="8-Beat Studio app icon" />
+          </div>
+          <div>
+            <div class="app-title">8-Beat Studio</div>
+            <div class="app-tagline">Your browser-based DAW &amp; AI song builder.</div>
+          </div>
+        </div>
+        <div class="app-body">
+          A full music workstation in the browser: multitrack tools, sample packs, generative song building,
+          and a ton of creative helpers for producers who live online.
+        </div>
+        <div class="app-meta">
+          <span class="meta-pill">PWA</span>
+          <span class="meta-pill">Music</span>
+          <span class="meta-pill">Flagship</span>
+        </div>
+        <div class="app-footer">
+          <div class="app-links">
+            <a class="btn-primary" href="https://braemonk.github.io/beat-maker/" target="_blank" rel="noopener">
+              <span class="icon">🎶</span>
+              <span>Open 8-Beat Studio</span>
+            </a>
+          </div>
+          <span class="badge">Flagship app</span>
+        </div>
+      </article>
+
+      <!-- Jerry -->
+      <article class="app-card">
+        <div class="app-header">
+          <div class="app-icon">
+            <!-- TODO: replace with real Jerry icon -->
+            <img src="icons/jerry-512.png" alt="Jerry app icon" />
+          </div>
+          <div>
+            <div class="app-title">Jerry</div>
+            <div class="app-tagline">A gentle mental health buddy in your pocket.</div>
+          </div>
+        </div>
+        <div class="app-body">
+          A wellness companion built around your little character, Jerry. Check in, track feelings,
+          and let a tiny friend sit with you through the harder days instead of doing it alone.
+        </div>
+        <div class="app-meta">
+          <span class="meta-pill">PWA</span>
+          <span class="meta-pill">Mental Health</span>
+          <span class="meta-pill">Companion</span>
+        </div>
+        <div class="app-footer">
+          <div class="app-links">
+            <a class="btn-primary" href="https://braemonk.github.io/JerryMentalHealth/" target="_blank" rel="noopener">
+              <span class="icon">💖</span>
+              <span>Open Jerry</span>
+            </a>
+          </div>
+          <span class="badge">Built from lived experience</span>
+        </div>
+      </article>
+
+      <!-- Jerry Editor -->
+      <article class="app-card">
+        <div class="app-header">
+          <div class="app-icon">
+            <!-- TODO: replace with real Jerry Editor icon -->
+            <img src="icons/jerry-editor-512.png" alt="Jerry Editor app icon" />
+          </div>
+          <div>
+            <div class="app-title">Jerry Editor</div>
+            <div class="app-tagline">A quick pixel editor for Jerry &amp; friends.</div>
+          </div>
+        </div>
+        <div class="app-body">
+          A lightweight pixel editor for creating and tweaking Jerry sprites, cozy icons, and other tiny art.
+          Snap-in quick edits without firing up a full desktop graphics suite.
+        </div>
+        <div class="app-meta">
+          <span class="meta-pill">PWA</span>
+          <span class="meta-pill">Pixel Art</span>
+          <span class="meta-pill">Tooling</span>
+        </div>
+        <div class="app-footer">
+          <div class="app-links">
+            <a class="btn-primary" href="https://braemonk.github.io/QuikEdit/" target="_blank" rel="noopener">
+              <span class="icon">🖌️</span>
+              <span>Open Jerry Editor</span>
+            </a>
+          </div>
+          <span class="badge">Art sidekick</span>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      Forged by
+      <a href="https://github.com/braemonk" target="_blank" rel="noopener">Braidan Monkhouse</a>.
+      New spells (apps) appear whenever inspiration strikes.
+    </footer>
+  </main>
+
+  <!-- Service worker registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(err => {
+          console.error('Service worker registration failed:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
