@@ -1,0 +1,21 @@
+{
+  "name": "Arcane App Shelf",
+  "short_name": "Arcane Shelf",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#05030a",
+  "theme_color": "#3e1560",
+  "description": "A cozy collection of magical, musical, and mindful PWAs by Braidan Monkhouse.",
+  "icons": [
+    {
+      "src": "icons/arcane-shelf-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/arcane-shelf-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
